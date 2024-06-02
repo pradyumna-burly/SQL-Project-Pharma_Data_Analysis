@@ -43,3 +43,44 @@ limit 5;
 select subchannel,avg(price) as avg_price
 from sales
 group by subchannel
+
+--11).Join the 'Employees' table with the 'Sales' table to get the name of the Sales Rep and the corresponding sales records.
+
+--Note:There is only one table in the given dataset, so can't perform join operation
+select salesrepname,sum(sales)
+from sales
+group BY salesrepname
+
+--12).Retrieve all sales made by employees from ' Rendsburg ' in the year 2018.
+select * from sales
+where city = 'Rendsburg' and year = 2018
+
+--13).Calculate the total sales for each product class, for each month, and order the results by year, month, and product class.
+select productclass,month,sum(sales) as Total_sales
+from sales
+group by year,month,productclass
+order BY year,month,productclass
+
+--14).Find the top 3 sales reps with the highest sales in 2019.
+select salesrepname,sum(sales) as Total_sales from sales
+where year = 2019
+group by salesrepname
+order by Total_sales desc
+limit 3;
+
+--15).Calculate the monthly total sales for each sub-channel, and then calculate the average
+--monthly sales for each sub-channel over the years.
+with monthly_total_sales as
+(
+    select year,month,subchannel,sum(sales) as Total_sales
+    from sales
+    group by year,month,subchannel  
+),
+average_monthly_sales as
+(
+    select subchannel,avg(Total_sales) as Avg_monthly_sales
+    from monthly_total_sales
+    group by subchannel
+)
+select subchannel,Avg_monthly_sales
+from average_monthly_sales
