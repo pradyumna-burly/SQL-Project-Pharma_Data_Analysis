@@ -1,0 +1,1 @@
+select distributor FROM sales
