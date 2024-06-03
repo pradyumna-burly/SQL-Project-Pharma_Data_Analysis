@@ -2,7 +2,7 @@
 
 ## Overview
 
-This repository showcases my internship project at Psyliq, where I analyzed pharmaceutical industry data using SQL. The project was conducted under the guidance of Psyliq, contributing to their data analysis efforts.
+This repository showcases my internship project at **Psyliq**, where I analyzed pharmaceutical industry data using SQL. The project was conducted under the guidance of Psyliq, contributing to their data analysis efforts.
 
 ## Project Details
 
