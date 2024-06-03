@@ -84,3 +84,85 @@ average_monthly_sales as
 )
 select subchannel,Avg_monthly_sales
 from average_monthly_sales
+
+--16).Create a summary report that includes the total sales, average price, and total quantity
+--sold for each product class.
+select productclass,sum(sales) as Total_sales,avg(price) as Average_Price,sum(quantity) as Total_quantity
+from sales
+group by productclass
+
+--17).Find the top 5 customers with the highest sales for each year.
+with ranked_customer as 
+(
+    select year,customername,sales,row_number() over(partition by year order by sales desc) as rank 
+    from sales
+)
+select year,customername,sales
+from ranked_customer
+where rank<=5
+
+--18).Calculate the year-over-year growth in sales for each country.
+with yearly_sales as   
+(
+    select country,year,sum(sales) as Total_sales
+    from sales
+    group by country,year
+),
+yearly_sales_growth as
+(
+    select ys1.country,ys1.year,ys1.Total_sales AS CurrentYearSales,
+    ys2.Total_sales AS PreviousYearSales,
+    case 
+        when ys2.Total_sales is null then null
+        else ((ys1.Total_sales - ys2.Total_sales)/ys2.Total_sales) * 100
+    end as YoYgrowth
+    from yearly_sales ys1
+    left join
+    yearly_sales ys2 on ys1.country = ys2.country and ys1.year = ys2.year + 1
+)
+select country,year,CurrentYearSales,PreviousYearSales,YoYgrowth
+from yearly_sales_growth
+order by country,year
+
+--19).List the months with the lowest sales for each year
+with monthly_sales as
+(
+    select year,month,sum(sales) as Total_sales
+    from sales
+    group by year,month
+),
+ranked_monthly_sales AS
+(
+    select year,month,Total_sales,
+    rank() over(partition by year ORDER BY Total_sales) as sales_rank
+    from monthly_sales
+)
+select year,month,Total_sales
+from ranked_monthly_sales
+where sales_rank = 1
+ORDER BY year,month
+
+--20).Calculate the total sales for each sub-channel in each country, and then find the country
+--with the highest total sales for each sub-channel.
+with subchannel_sales as
+(
+    select country,subchannel,sum(sales) as Total_sales
+    from sales
+    group by country,subchannel
+),
+ranked_subchannel_sales as
+(
+    select country,subchannel,Total_sales,
+    rank() over(partition by subchannel ORDER BY Total_sales desc) as sales_rank
+    from subchannel_sales
+)
+select subchannel,country,Total_sales
+from ranked_subchannel_sales
+where sales_rank = 1
+ORDER BY subchannels
+
+
+
+
+
+
